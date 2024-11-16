@@ -1,0 +1,17 @@
+{
+    "settings": {
+      "number_of_shards": 1,
+      "number_of_replicas": 1
+    },
+    "mappings": {
+      "properties": {
+        "date": { "type": "date"},
+        "action": { "type": "keyword" },
+        "host": { "type": "keyword"},
+        "message": { "type": "keyword" },
+        "messageType": { "type": "keyword"},
+        "resquestId": { "type": "keyword" }
+      }
+    }
+  }
+  
