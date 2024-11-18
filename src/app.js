@@ -63,13 +63,13 @@ class ARGOSCLient extends LitElement {
 
 
   constructor() {
-      super();
-      this.activeLogin = true;
+    super();
+    this.activeLogin = true;
   }
 
   firstUpdated() {
-    window.addEventListener('login', () => {
-      this.activeLogin = true;
+    this.addEventListener('login', () => {
+      this.activeLogin = false;
     });
   }
 

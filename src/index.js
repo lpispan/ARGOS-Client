@@ -22,6 +22,7 @@ const useSwagger = process.env.USE_SWAGGER || true;
 
 writeInfo('starting');
 // Manage Swagger
+// console.log(process.env)
 if (useSwagger == 'true') {
     writeDebug('swaggerActive');
     app.use('/argos-client-docs', swaggerUi.serve, swaggerUi.setup(specs));

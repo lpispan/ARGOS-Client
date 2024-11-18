@@ -6,10 +6,16 @@
     "mappings": {
       "properties": {
         "date": { "type": "date"},
-        "id": { "type": "keyword" },
-        "status": { "type": "keyword" },
+        "requestId": { "type": "keyword" },
         "userId": { "type": "keyword" },
-        "maxTime": { "type": "keyword"}
+        "argosUser": { "type": "keyword" },
+        "ticketId": { "type": "keyword" },
+        "host": { "type": "keyword" },
+        "logType": { "type": "keyword" },
+        "eventId": { "type": "keyword" },
+        "entryType": { "type": "keyword" },
+        "message": { "type": "keyword"},
+        "source": { "type": "keyword"}
       }
     }
   }

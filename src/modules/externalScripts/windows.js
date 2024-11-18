@@ -1,4 +1,4 @@
-const { exec } = require('child_process');
+const { exec, spawn } = require('child_process');
 const utils = require('../utils.js');
 const argosRequest = require('../../base/request');
 
@@ -39,13 +39,12 @@ async function prepareUser() {
     return status;
 }
 
-async function readEventLogs(startDate, endDate) {
-    const command = COMMAND_READ_LOGS.replace('{{type}}', 'Application').replace('{{startDate}}', startDate).replace('{{endDate}}', endDate);
-    console.log(command)
-    const {status, message} = await executeCommand(command);
-    console.log(status);
-    console.log(message);
-    //transformar y guardar en ELK
+async function readEventLogs(startDate, endDate, request) {
+    const command = COMMAND_READ_LOGS.replace('{{type}}', 'System').replace('{{startDate}}', startDate).replace('{{endDate}}', endDate);
+    await executePowerShellLogs(command, request);
+
+    const command2 = COMMAND_READ_LOGS.replace('{{type}}', 'Application').replace('{{startDate}}', startDate).replace('{{endDate}}', endDate);
+    await executePowerShellLogs(command2, request);
 }
 
 async function startService() {
@@ -93,6 +92,38 @@ async function executeCommand(command) {
             message = stdout;
             resolve({ status, message });
         });
+    });
+}
+
+async function executePowerShellLogs(command, request) {
+    const powershell = spawn('powershell', ['-Command', command]);
+   
+    powershell.stdout.on('data', (data) => {
+        try {
+            const log = JSON.parse(data);
+
+            const newData = {
+                date: moment().toISOString(),
+                requestId: request.requestId,
+                userId: request.userId,
+                argosUser: log.UserName,
+                ticketId: request.ticketId,
+                host: request.host,
+                lotgType: 'System',
+                eventId: log.EventID,
+                entryType: log.EntryType,
+                message: log.message,
+                source: log.Source
+            }
+            try {
+                const elasticsearchUtils = require('./elasticsearch/elasticsearchUtils');
+                elasticsearchUtils.addDocument(newData, process.env.INDEX_ARGOS_PATTERN);
+            } catch(error) {
+                console.debug("Can't connect with ElasticSearch")
+            }
+        } catch(error) {
+            console.log(error)
+        }
     });
 }
 

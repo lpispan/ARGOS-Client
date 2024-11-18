@@ -1,6 +1,6 @@
 const win = require('./externalScripts/windows');
 const linux = require('./externalScripts/linux');
-const { writeDebug, writeError, writeInfo, writeWarning } = require('../modules/logs');
+const { writeError, writeInfo } = require('../modules/logs');
 const { isUndefined } = require('lodash');
 const moment = require('moment');
 const path = require('path');
@@ -16,12 +16,11 @@ async function executeLogout(request) {
     argosRequest.requestId = null;
 
     const platform = os.platform();
-    // if ('win32' === platform) {
-    //     console.log('es win');
-    //     console.log('es' +  await win.closeEnvironment());
-    // } else {
-    //     console.log('eslinux')
-    // }
+    if ('win32' === platform) {
+        await win.closeEnvironment();
+    } else {
+        await linux.closeEnvironment();
+    }
     const newCredentials = {};
     newCredentials.password = "";
     newCredentials.username = "",
@@ -30,27 +29,25 @@ async function executeLogout(request) {
 }
 
 async function executeRequest(request) {
-    const { requestId, host, port, userId } = request;
+    const { requestId } = request;
     argosRequest.requestId = requestId;
 
     const platform = os.platform();
     if ('win32' === platform) {
-        console.log('es win');
-       console.log('es' +  await win.prepareEnvironment());
+       await win.prepareEnvironment();
     } else {
-        console.log('eslinux')
+        await linux.prepareEnvironment();
     }
-    // console.log('comienzo a leer los logs');
-    // logsInterval = setInterval(async () => {
-        
-    //     const startDate = moment().add(-5, 'seconds').format('YYYY-MM-DD HH:mm:ss');
-    //     const endDate  = moment().format('YYYY-MM-DD HH:mm:ss')
-    //     console.log('ejecutando llamada desde ' + startDate + " hasta " + endDate);
-    //     await win.readEventLogs(startDate, endDate);
-
-    // }, 5 * 1000);
-    
-    //TODO: tiene q ser un bucle
+    logsInterval = setInterval(async () => {
+        const startDate = moment().add(-5, 'seconds').format('YYYY-MM-DD HH:mm:ss');
+        const endDate  = moment().format('YYYY-MM-DD HH:mm:ss')
+       
+        if ('win32' === platform) {
+        await win.readEventLogs(startDate, endDate);
+        } else {
+            await win.readEventLogs(startDate, endDate);
+        }
+    }, 5 * 1000);
 
     const newCredentials = {};
     newCredentials.password = argosRequest.password;
@@ -70,9 +67,8 @@ async function getARGOSServerData(request, newCredentials, isReset) {
         data.attributes['guacd-port'] = isReset ? '' : process.env.ARGOS_PORT;
         data.parameters.password = newCredentials.password;
         data.parameters.username = newCredentials.username;
-        console.log(data)
         await sleep(1000);
-    //    await guaca.updatePassword(request, data);
+        await guaca.updatePassword(request, data);
         await sleep(1000);
         argosRequest.requestStatus = "READY";
     } catch (Error) {
@@ -90,8 +86,6 @@ function decryptRequest(request) {
     decryptRequest.userId = cripto.decrypt(request.userId);
     decryptRequest.dataSource = cripto.decrypt(request.dataSource);
     decryptRequest.connectionId = cripto.decrypt(request.connectionId);
-    
-console.log(decryptRequest);
 
     return decryptRequest;
 }

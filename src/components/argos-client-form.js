@@ -1,5 +1,6 @@
 import { css, html } from 'lit-element';
 import ArgosclientEntity from './argos-client-entity';
+import ArgosClientConfirm from './argos-client-confirm';
 import CryptoJS from 'crypto-js';
 import '@vaadin/accordion';
 import '@vaadin/combo-box';
@@ -14,7 +15,32 @@ export default class ArgosclientForm extends ArgosclientEntity {
         :host {
            display: block;
            background-color: var(--neutral-color);
-           width: 100%;
+           width: 500px;
+           margin-top: 20px;
+        }
+
+        .toast {
+            align-items: center;
+            display: flex;
+            font-size: 16px;
+            font-weight: bold;
+            height: 35px;
+            justify-content: center;
+        }
+        
+        .ok {
+            background-color: var(--dark-shade);
+            color: var(--default-background);
+        
+        }
+        
+        .error {
+            background-color: var(--error-color);
+            color: var(--default-background);
+        }
+
+        .hidden {
+            display: none !important;
         }
 
         vaadin-accordion-panel,
@@ -24,9 +50,12 @@ export default class ArgosclientForm extends ArgosclientEntity {
         }
 
         .control {
-           display: flex;
-           justify-content: flex-end;
-           margin: 1em;
+            display: flex;
+            justify-content: flex-end;
+            margin: 1em;
+            position: absolute;
+            bottom: 50px;
+            right: 20px;
         }
 
         .control button {
@@ -38,6 +67,7 @@ export default class ArgosclientForm extends ArgosclientEntity {
             height: 40px;
             width: 120px;
             background-color: var(--main-color);
+          
         }
 
         .control button:hover {
@@ -83,6 +113,7 @@ export default class ArgosclientForm extends ArgosclientEntity {
 
     render() {
         return html`
+            <div class="toast hidden" id="toast"></div> 
             <vaadin-accordion>
                 <vaadin-accordion-panel summary="${this.getTranslation('general')}">
                     <vaadin-vertical-layout>
@@ -139,7 +170,7 @@ export default class ArgosclientForm extends ArgosclientEntity {
             </vaadin-accordion>
 
             <div class="control">
-                <button @click=${this.#save}>${this.getTranslation('save')}</button>
+                <button @click=${this.#saveRequest}>${this.getTranslation('save')}</button>
             </div> 
         `;
     }
@@ -162,6 +193,14 @@ export default class ArgosclientForm extends ArgosclientEntity {
                 console.error(Error);
             }
         });
+    }
+
+    #saveRequest() {
+        const toast = document.createElement('argos-client-confirm');
+        toast.addEventListener('saveConfirm', () => {
+           this.#save();
+        });
+        document.body.append(toast);
     }
 
    
@@ -193,9 +232,20 @@ export default class ArgosclientForm extends ArgosclientEntity {
         };
 
         fetch('/argos-client/env', requestOptions)
-             .then((response) => response.text())
-             .then((result) => console.log(result))
-             .catch((error) => console.error(error));
+            .then((response) => response.text())
+            .then((result) => {
+                const toast = this.renderRoot.querySelector('#toast');
+                toast.classList.remove('hidden');
+                toast.classList.add('ok');
+                toast.innerHTML = this.getTranslation('dataSaved');
+            })
+            .catch((error) => {
+                const toast = this.renderRoot.querySelector('#toast');
+                toast.classList.remove('hidden');
+                toast.classList.add('error');
+                toast.innerHTML = this.getTranslation('errorSave');
+                console.error(error)
+            });
     }
 
 }

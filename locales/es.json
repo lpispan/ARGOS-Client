@@ -38,5 +38,10 @@
     "requestedInformation": "Petición del status de la petición de conexión {{requestId}}",
     "executedPing": "Ejecutado comando 'Ping' desde {{host}}",
     "executingNewRequest": "Ejecutando una nueva petición de conexión con Id {{requestId}}",
-    "missingRequestField": "Falta el campo obligatorio: {{fieldName}}"
+    "missingRequestField": "Falta el campo obligatorio: {{fieldName}}",
+    "errorSave":"Error salvando los datos, por favor contacte con el administrador",
+    "dataSaved":"Datos salvados satisfactoriamente",
+    "cancel": "Cancelar",
+    "confirmTitle": "ARGOS: Notificación",
+    "questionConfirm": "¿Está seguro de que desea guardar esta configuración?"
 }

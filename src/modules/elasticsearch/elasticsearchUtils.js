@@ -103,7 +103,7 @@ async function init(indexPattern, indexSetting) {
   const indexName = `${indexPattern}_${moment().format('YYYYMMDD')}`;
   const indexExists = await client.indices.exists({ index: indexName });
   
-  writeInfo('CheckingElasticSearchStatus' + indexPattern);
+  writeInfo('CheckingElasticSearchStatus: ' + indexPattern);
   
   if (!indexExists) {
     await createIndex(indexPattern, indexSetting);

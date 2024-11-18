@@ -38,5 +38,10 @@
     "argosServerPassword": "ARGOS Server password",
     "save": "Save",
     "userSession": "User sessions",
-    "userSO": "OS User"
+    "userSO": "OS User",
+    "errorSave":"Error saving data, please contact with the administrator",
+    "dataSaved":"Data saved succesfully",
+    "cancel": "Cancel",
+    "confirmTitle": "ARGOS: Notification",
+    "questionConfirm": "Are you sure that you want to save this configuration?"
 }

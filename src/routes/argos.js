@@ -193,8 +193,6 @@ router.post('/requestLogout', (req, res) => {
   const request = argosUtils.decryptRequest(req.body)
     writeInfo('requestLogout' + request.requestId);
     let status;
-console.log(request);
-console.log(argosRequest);
 
     if (isNull(argosRequest.requestId)) {
       status = 'NO DETECTED';
